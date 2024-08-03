@@ -26,6 +26,18 @@ impl<'a> CookieChange<'a> {
             status: ChangeStatus::Delete,
         }
     }
+
+    pub fn cookie(&self) -> &Cookie<'a> {
+        &self.cookie
+    }
+
+    pub fn status(&self) -> ChangeStatus {
+        self.status
+    }
+
+    pub fn into_cookie(self) -> Cookie<'a> {
+        self.cookie
+    }
 }
 
 impl<'a> PartialEq for CookieChange<'a> {

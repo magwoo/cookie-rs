@@ -1,12 +1,12 @@
 use crate::Cookie;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub(crate) enum ChangeStatus {
     Create,
     Delete,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct ChangedCookie<'a> {
     cookie: Cookie<'a>,
     status: ChangeStatus,

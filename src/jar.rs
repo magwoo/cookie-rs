@@ -5,6 +5,7 @@ use crate::Cookie;
 
 mod changed;
 
+#[derive(Debug, Clone)]
 pub struct CookieJar<'a> {
     cookie: BTreeSet<Cookie<'a>>,
     changes: BTreeSet<ChangedCookie<'a>>,

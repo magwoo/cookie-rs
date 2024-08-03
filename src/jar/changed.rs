@@ -1,18 +1,18 @@
 use crate::Cookie;
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum ChangeStatus {
+pub enum ChangeStatus {
     Create,
     Delete,
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct ChangedCookie<'a> {
+pub struct CookieChange<'a> {
     cookie: Cookie<'a>,
     status: ChangeStatus,
 }
 
-impl<'a> ChangedCookie<'a> {
+impl<'a> CookieChange<'a> {
     pub fn create(cookie: Cookie<'a>) -> Self {
         Self {
             cookie,
@@ -28,21 +28,21 @@ impl<'a> ChangedCookie<'a> {
     }
 }
 
-impl<'a> PartialEq for ChangedCookie<'a> {
+impl<'a> PartialEq for CookieChange<'a> {
     fn eq(&self, other: &Self) -> bool {
         self.cookie.eq(&other.cookie)
     }
 }
 
-impl<'a> Eq for ChangedCookie<'a> {}
+impl<'a> Eq for CookieChange<'a> {}
 
-impl<'a> PartialOrd for ChangedCookie<'a> {
+impl<'a> PartialOrd for CookieChange<'a> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<'a> Ord for ChangedCookie<'a> {
+impl<'a> Ord for CookieChange<'a> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.cookie.cmp(&other.cookie)
     }

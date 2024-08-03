@@ -1,14 +1,15 @@
 use std::collections::BTreeSet;
 
-use self::changed::ChangedCookie;
 use crate::Cookie;
+
+pub use self::changed::CookieChange;
 
 mod changed;
 
 #[derive(Debug, Clone)]
 pub struct CookieJar<'a> {
     cookie: BTreeSet<Cookie<'a>>,
-    changes: BTreeSet<ChangedCookie<'a>>,
+    changes: BTreeSet<CookieChange<'a>>,
 }
 
 impl<'a> CookieJar<'a> {
@@ -17,10 +18,18 @@ impl<'a> CookieJar<'a> {
     }
 
     pub fn add(&mut self, cookie: Cookie<'a>) {
-        self.changes.replace(ChangedCookie::create(cookie));
+        self.changes.replace(CookieChange::create(cookie));
     }
 
     pub fn remove<C: Into<Cookie<'a>>>(&mut self, cookie: C) {
-        self.changes.replace(ChangedCookie::delete(cookie.into()));
+        self.changes.replace(CookieChange::delete(cookie.into()));
+    }
+
+    pub fn cookie(&self) -> &BTreeSet<Cookie<'a>> {
+        &self.cookie
+    }
+
+    pub fn changes(&self) -> &BTreeSet<CookieChange<'a>> {
+        &self.changes
     }
 }

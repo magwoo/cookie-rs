@@ -1,7 +1,7 @@
 use std::borrow::{Borrow, Cow};
 use std::time::Duration;
 
-use self::builder::CookieBuilder;
+pub use self::builder::CookieBuilder;
 
 pub mod builder;
 
@@ -149,6 +149,56 @@ impl<'a> Borrow<str> for Cookie<'a> {
 impl<'a> From<&'a str> for Cookie<'a> {
     fn from(name: &'a str) -> Self {
         Cookie::new(name, "")
+    }
+}
+
+impl<'a> std::fmt::Display for Cookie<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}={}", self.name, self.value)?;
+
+        if let Some(domain) = self.domain.as_ref() {
+            write!(f, "; Domain={}", domain)?;
+        }
+
+        if let Some(expires) = self.expires.as_ref() {
+            write!(f, "; Expires={}", expires)?;
+        }
+
+        if self.http_only.is_some_and(|v| v) {
+            write!(f, "; HttpOnly")?;
+        }
+
+        if let Some(max_age) = self.max_age.as_ref() {
+            write!(f, "; Max-Age={}", max_age.as_secs())?;
+        }
+
+        if self.partitioned.is_some_and(|v| v) {
+            write!(f, "; Partitioned")?;
+        }
+
+        if let Some(path) = self.path.as_ref() {
+            write!(f, "; Path={}", path)?;
+        }
+
+        if let Some(same_site) = self.same_site {
+            write!(f, "; SameSite={}", same_site)?;
+        }
+
+        if self.secure.is_some_and(|v| v) {
+            write!(f, "; Secure")?;
+        }
+
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for SameSite {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SameSite::Strict => write!(f, "Strict"),
+            SameSite::Lax => write!(f, "Lax"),
+            SameSite::None => write!(f, "None"),
+        }
     }
 }
 

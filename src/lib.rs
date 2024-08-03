@@ -1,5 +1,5 @@
-pub use crate::cookie::builder::CookieBuilder;
 pub use crate::cookie::Cookie;
+pub use crate::cookie::CookieBuilder;
 pub use crate::jar::CookieJar;
 
 mod cookie;

@@ -1,6 +1,6 @@
 use crate::Cookie;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ChangeStatus {
     Create,
     Delete,
@@ -30,7 +30,7 @@ impl<'a> CookieChange<'a> {
 
 impl<'a> PartialEq for CookieChange<'a> {
     fn eq(&self, other: &Self) -> bool {
-        self.cookie.eq(&other.cookie)
+        self.cookie == other.cookie && self.status == other.status
     }
 }
 

@@ -122,7 +122,26 @@ impl<'a> Cookie<'a> {
 
 impl<'a> PartialEq for Cookie<'a> {
     fn eq(&self, other: &Self) -> bool {
-        self.name.eq(&other.name)
+        match (self.domain.as_ref(), other.domain.as_ref()) {
+            (Some(a), Some(b)) if a.eq_ignore_ascii_case(b) => (),
+            (None, None) => (),
+            _ => return false,
+        }
+
+        match (self.path.as_ref(), other.path.as_ref()) {
+            (Some(a), Some(b)) if a.eq_ignore_ascii_case(b) => (),
+            (None, None) => (),
+            _ => return false,
+        }
+
+        self.name == other.name
+            && self.value == other.value
+            && self.expires == other.expires
+            && self.http_only == other.http_only
+            && self.max_age == other.max_age
+            && self.partitioned == other.partitioned
+            && self.same_site == other.same_site
+            && self.secure == other.secure
     }
 }
 

@@ -1,9 +1,7 @@
 use std::borrow::Cow;
 use std::time::Duration;
 
-use self::error::MissingPair;
-use self::error::ParseError;
-use self::error::ParseSameSiteError;
+pub use self::error::*;
 use super::Cookie;
 use super::SameSite;
 

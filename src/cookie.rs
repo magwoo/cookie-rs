@@ -167,6 +167,14 @@ impl<'a> Borrow<str> for Cookie<'a> {
     }
 }
 
+impl<'a> std::str::FromStr for Cookie<'a> {
+    type Err = parse::ParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Cookie::parse(s.to_string())
+    }
+}
+
 impl<'a> std::fmt::Display for Cookie<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}={}", self.name, self.value)?;

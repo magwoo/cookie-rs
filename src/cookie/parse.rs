@@ -11,7 +11,7 @@ impl<'a> Cookie<'a> {
     pub fn parse<V: Into<Cow<'a, str>>>(value: V) -> Result<Self, ParseError> {
         let full_string: Cow<'a, str> = value.into();
 
-        // SAFE `full_string` won't be released sooner
+        // SAFETY: `full_string` won't be released sooner
         let str = unsafe {
             let bytes = std::slice::from_raw_parts(full_string.as_ptr(), full_string.len());
             std::str::from_utf8_unchecked(bytes)
@@ -46,20 +46,26 @@ fn parse_cookie(str: &str) -> Result<Cookie<'_>, ParseError> {
 
         let (name, value) = (pair.next().unwrap(), pair.next());
 
-        match (name, value) {
-            ("Domain", domain) => cookie.set_domain(domain.ok_or(MissingPair::Domain)?),
-            ("Expires", expires) => cookie.set_expires(expires.ok_or(MissingPair::Expires)?),
-            ("HttpOnly", _) => cookie.set_http_only(true),
-            ("MaxAge", max_age) => cookie.set_max_age(Duration::from_secs(
-                max_age.ok_or(MissingPair::MaxAge)?.parse()?,
-            )),
-            ("Partitioned", _) => cookie.set_partitioned(true),
-            ("Path", path) => cookie.set_path(path.ok_or(MissingPair::Path)?),
-            ("Secure", _) => cookie.set_secure(true),
-            ("SameSite", same_site) => {
+        match value {
+            domain if name.eq_ignore_ascii_case("Domain") => {
+                cookie.set_domain(domain.ok_or(MissingPair::Domain)?)
+            }
+            expires if name.eq_ignore_ascii_case("Expires") => {
+                cookie.set_expires(expires.ok_or(MissingPair::Expires)?)
+            }
+            _ if name.eq_ignore_ascii_case("HttpOnly") => cookie.set_http_only(true),
+            max_age if name.eq_ignore_ascii_case("Max-Age") => cookie.set_max_age(
+                Duration::from_secs(max_age.ok_or(MissingPair::MaxAge)?.parse()?),
+            ),
+            _ if name.eq_ignore_ascii_case("Partitioned") => cookie.set_partitioned(true),
+            path if name.eq_ignore_ascii_case("Path") => {
+                cookie.set_path(path.ok_or(MissingPair::Path)?)
+            }
+            _ if name.eq_ignore_ascii_case("Secure") => cookie.set_secure(true),
+            same_site if name.eq_ignore_ascii_case("SameSite") => {
                 cookie.set_same_site(SameSite::parse(same_site.ok_or(MissingPair::SameSite)?)?)
             }
-            (name, _) => return Err(ParseError::UnknownAttribute(name.to_string())),
+            _ => return Err(ParseError::UnknownAttribute(name.to_string())),
         }
     }
 

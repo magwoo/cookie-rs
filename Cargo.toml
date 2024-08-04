@@ -2,6 +2,7 @@
 name = "cookie-rs"
 version = "0.0.0-alpha"
 repository = "https://github.com/magwoo/cookie-rs"
+description = "In work"
 keywords = ["cookie", "http", "web"]
 license = "MIT"
 edition = "2021"

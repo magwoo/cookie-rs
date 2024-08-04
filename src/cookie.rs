@@ -4,6 +4,7 @@ use std::time::Duration;
 pub use self::builder::CookieBuilder;
 
 pub mod builder;
+pub mod parse;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SameSite {
@@ -14,6 +15,7 @@ pub enum SameSite {
 
 #[derive(Debug, Clone)]
 pub struct Cookie<'a> {
+    full_string: Option<Cow<'a, str>>,
     name: Cow<'a, str>,
     value: Cow<'a, str>,
     domain: Option<Cow<'a, str>>,
@@ -165,12 +167,6 @@ impl<'a> Borrow<str> for Cookie<'a> {
     }
 }
 
-impl<'a> From<&'a str> for Cookie<'a> {
-    fn from(name: &'a str) -> Self {
-        Cookie::new(name, "")
-    }
-}
-
 impl<'a> std::fmt::Display for Cookie<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}={}", self.name, self.value)?;
@@ -224,6 +220,7 @@ impl std::fmt::Display for SameSite {
 impl<'a> Default for Cookie<'a> {
     fn default() -> Self {
         Self {
+            full_string: None,
             name: Cow::Borrowed(""),
             value: Cow::Borrowed(""),
             domain: None,

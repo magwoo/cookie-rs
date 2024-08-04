@@ -1,13 +1,15 @@
 use std::collections::BTreeSet;
 
-use crate::Cookie;
+use crate::{Cookie, StringPrison};
 
 pub use self::changed::CookieChange;
 
 mod changed;
+mod parse;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct CookieJar<'a> {
+    prison: Option<StringPrison<'a>>,
     cookie: BTreeSet<Cookie<'a>>,
     changes: BTreeSet<CookieChange<'a>>,
 }

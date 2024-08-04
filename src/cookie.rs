@@ -2,6 +2,7 @@ use std::borrow::{Borrow, Cow};
 use std::time::Duration;
 
 pub use self::builder::CookieBuilder;
+use crate::StringPrison;
 
 pub mod builder;
 pub mod parse;
@@ -15,7 +16,7 @@ pub enum SameSite {
 
 #[derive(Debug, Clone)]
 pub struct Cookie<'a> {
-    full_string: Option<Cow<'a, str>>,
+    prison: Option<StringPrison<'a>>,
     name: Cow<'a, str>,
     value: Cow<'a, str>,
     domain: Option<Cow<'a, str>>,
@@ -228,7 +229,7 @@ impl std::fmt::Display for SameSite {
 impl<'a> Default for Cookie<'a> {
     fn default() -> Self {
         Self {
-            full_string: None,
+            prison: None,
             name: Cow::Borrowed(""),
             value: Cow::Borrowed(""),
             domain: None,

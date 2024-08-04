@@ -1,6 +1,8 @@
 use std::borrow::Cow;
 use std::time::Duration;
 
+use crate::StringPrison;
+
 pub use self::error::*;
 use super::Cookie;
 use super::SameSite;
@@ -9,17 +11,14 @@ pub mod error;
 
 impl<'a> Cookie<'a> {
     pub fn parse<V: Into<Cow<'a, str>>>(value: V) -> Result<Self, ParseError> {
-        let full_string: Cow<'a, str> = value.into();
+        let prison = StringPrison::new(value.into());
 
         // SAFETY: `full_string` won't be released sooner
-        let str = unsafe {
-            let bytes = std::slice::from_raw_parts(full_string.as_ptr(), full_string.len());
-            std::str::from_utf8_unchecked(bytes)
-        };
+        let str = unsafe { prison.get() };
 
         let mut cookie = parse_cookie(str)?;
 
-        cookie.full_string = Some(full_string);
+        cookie.prison = Some(prison);
 
         Ok(cookie)
     }

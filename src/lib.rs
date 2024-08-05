@@ -4,9 +4,10 @@ pub use crate::jar::CookieJar;
 
 pub(crate) use prison::StringPrison;
 
-mod cookie;
-mod jar;
 mod prison;
+
+pub mod cookie;
+pub mod jar;
 
 pub mod prelude {
     pub use crate::cookie::SameSite;

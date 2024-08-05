@@ -1,6 +1,6 @@
 [package]
 name = "cookie-rs"
-version = "0.0.0-alpha"
+version = "0.0.1-alpha"
 repository = "https://github.com/magwoo/cookie-rs"
 description = "In work"
 keywords = ["cookie", "http", "web"]

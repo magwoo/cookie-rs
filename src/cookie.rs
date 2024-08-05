@@ -168,6 +168,18 @@ impl<'a> Borrow<str> for Cookie<'a> {
     }
 }
 
+impl<'a> From<&'a str> for Cookie<'a> {
+    fn from(value: &'a str) -> Self {
+        Cookie::new(value, "")
+    }
+}
+
+impl<'a> From<(&'a str, &'a str)> for Cookie<'a> {
+    fn from(value: (&'a str, &'a str)) -> Self {
+        Cookie::new(value.0, value.1)
+    }
+}
+
 impl<'a> std::str::FromStr for Cookie<'a> {
     type Err = parse::ParseError;
 

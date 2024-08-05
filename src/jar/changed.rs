@@ -3,7 +3,7 @@ use crate::Cookie;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ChangeStatus {
     Create,
-    Delete,
+    Remove,
 }
 
 #[derive(Debug, Clone)]
@@ -20,10 +20,10 @@ impl<'a> CookieChange<'a> {
         }
     }
 
-    pub fn delete(cookie: Cookie<'a>) -> Self {
+    pub fn remove(cookie: Cookie<'a>) -> Self {
         Self {
             cookie,
-            status: ChangeStatus::Delete,
+            status: ChangeStatus::Remove,
         }
     }
 
@@ -37,6 +37,13 @@ impl<'a> CookieChange<'a> {
 
     pub fn into_cookie(self) -> Cookie<'a> {
         self.cookie
+    }
+
+    pub fn as_header_value(&self) -> String {
+        match self.status {
+            ChangeStatus::Create => self.cookie.to_string(),
+            ChangeStatus::Remove => format!("{}=removed; Max-Age=0", self.cookie.name()),
+        }
     }
 }
 

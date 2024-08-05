@@ -1,5 +1,6 @@
 use std::collections::BTreeSet;
 
+use crate::cookie::parse::ParseError;
 use crate::{Cookie, StringPrison};
 
 pub use self::changed::CookieChange;
@@ -15,6 +16,13 @@ pub struct CookieJar<'a> {
 }
 
 impl<'a> CookieJar<'a> {
+    pub fn new<C: Into<BTreeSet<Cookie<'a>>>>(cookie: C) -> Self {
+        Self {
+            cookie: cookie.into(),
+            ..Default::default()
+        }
+    }
+
     pub fn get(&self, name: &str) -> Option<&Cookie<'a>> {
         self.cookie.get(name)
     }
@@ -24,7 +32,7 @@ impl<'a> CookieJar<'a> {
     }
 
     pub fn remove<C: Into<Cookie<'a>>>(&mut self, cookie: C) {
-        self.changes.replace(CookieChange::delete(cookie.into()));
+        self.changes.replace(CookieChange::remove(cookie.into()));
     }
 
     pub fn cookie(&self) -> &BTreeSet<Cookie<'a>> {
@@ -33,5 +41,17 @@ impl<'a> CookieJar<'a> {
 
     pub fn changes(&self) -> &BTreeSet<CookieChange<'a>> {
         &self.changes
+    }
+
+    pub fn as_header_values(&self) -> Vec<String> {
+        self.changes.iter().map(|c| c.as_header_value()).collect()
+    }
+}
+
+impl<'a> std::str::FromStr for CookieJar<'a> {
+    type Err = ParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::parse(s.to_string())
     }
 }

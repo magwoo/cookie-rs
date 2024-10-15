@@ -1,11 +1,11 @@
 use std::borrow::Cow;
 use std::time::Duration;
 
+use super::Cookie;
+use super::SameSite;
 use crate::StringPrison;
 
 pub use self::error::*;
-use super::Cookie;
-use super::SameSite;
 
 pub mod error;
 
@@ -13,11 +13,10 @@ impl<'a> Cookie<'a> {
     pub fn parse<V: Into<Cow<'a, str>>>(value: V) -> Result<Self, ParseError> {
         let prison = StringPrison::new(value.into());
 
-        // SAFETY: `full_string` won't be released sooner
+        // SAFETY: prison and slice owned by the same struct
         let str = unsafe { prison.get() };
 
         let mut cookie = parse_cookie(str)?;
-
         cookie.prison = Some(prison);
 
         Ok(cookie)
@@ -43,7 +42,10 @@ fn parse_cookie(str: &str) -> Result<Cookie<'_>, ParseError> {
     for attribute in attributes {
         let mut pair = attribute.trim().splitn(2, '=');
 
-        let (name, value) = (pair.next().unwrap(), pair.next());
+        let (name, value) = (
+            pair.next().expect("Missing any attribute name"),
+            pair.next(),
+        );
 
         match value {
             domain if name.eq_ignore_ascii_case("Domain") => {

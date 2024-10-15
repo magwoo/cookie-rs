@@ -9,6 +9,7 @@ impl<'a> CookieJar<'a> {
     pub fn parse<V: Into<Cow<'a, str>>>(value: V) -> Result<Self, ParseError> {
         let prison = StringPrison::new(value);
 
+        // SAFETY: prison and slice owned by the same struct
         let str = unsafe { prison.get() };
 
         let mut jar = parse_jar(str)?;

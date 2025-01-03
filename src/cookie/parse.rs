@@ -82,7 +82,7 @@ impl SameSite {
         } else if value.eq_ignore_ascii_case("none") {
             Ok(Self::None)
         } else {
-            Err(ParseSameSiteError::UnknownValue)
+            Err(ParseSameSiteError::UnknownValue(value.to_owned()))
         }
     }
 }

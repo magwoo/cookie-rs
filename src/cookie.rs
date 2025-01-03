@@ -184,7 +184,7 @@ impl<'a> std::str::FromStr for Cookie<'a> {
     type Err = parse::ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Cookie::parse(s.to_string())
+        Cookie::parse(s.to_owned())
     }
 }
 

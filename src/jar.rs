@@ -52,6 +52,6 @@ impl<'a> std::str::FromStr for CookieJar<'a> {
     type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Self::parse(s.to_string())
+        Self::parse(s.to_owned())
     }
 }

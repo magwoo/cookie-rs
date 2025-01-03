@@ -11,19 +11,27 @@ pub mod error;
 
 impl<'a> Cookie<'a> {
     pub fn parse<V: Into<Cow<'a, str>>>(value: V) -> Result<Self, ParseError> {
-        let prison = StringPrison::new(value.into());
+        Self::inner_parse(value.into(), false)
+    }
+
+    pub fn parse_strict<V: Into<Cow<'a, str>>>(value: V) -> Result<Self, ParseError> {
+        Self::inner_parse(value.into(), true)
+    }
+
+    fn inner_parse(value: Cow<'a, str>, strict: bool) -> Result<Self, ParseError> {
+        let prison = StringPrison::new(value);
 
         // SAFETY: prison and slice owned by the same struct
         let str = unsafe { prison.get() };
 
-        let mut cookie = parse_cookie(str)?;
+        let mut cookie = parse_cookie(str, strict)?;
         cookie.prison = Some(prison);
 
         Ok(cookie)
     }
 }
 
-fn parse_cookie(str: &str) -> Result<Cookie<'_>, ParseError> {
+fn parse_cookie(str: &str, strict: bool) -> Result<Cookie<'_>, ParseError> {
     let mut attributes = str.split(';');
 
     let (name, value) = attributes
@@ -43,7 +51,7 @@ fn parse_cookie(str: &str) -> Result<Cookie<'_>, ParseError> {
         let mut pair = attribute.trim().splitn(2, '=');
 
         let (name, value) = (
-            pair.next().expect("Missing any attribute name"),
+            pair.next().expect("missing any attribute name"),
             pair.next(),
         );
 
@@ -66,7 +74,8 @@ fn parse_cookie(str: &str) -> Result<Cookie<'_>, ParseError> {
             same_site if name.eq_ignore_ascii_case("SameSite") => {
                 cookie.set_same_site(SameSite::parse(same_site.ok_or(MissingPair::SameSite)?)?)
             }
-            _ => return Err(ParseError::UnknownAttribute(name.to_string())),
+            _ if strict => return Err(ParseError::UnknownAttribute(name.to_owned())),
+            _ => continue,
         }
     }
 

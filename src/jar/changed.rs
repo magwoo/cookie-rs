@@ -35,6 +35,14 @@ impl<'a> CookieChange<'a> {
         self.status
     }
 
+    pub fn is_create(&self) -> bool {
+        self.status() == ChangeStatus::Create
+    }
+
+    pub fn is_remove(&self) -> bool {
+        self.status() == ChangeStatus::Remove
+    }
+
     pub fn into_cookie(self) -> Cookie<'a> {
         self.cookie
     }
@@ -49,7 +57,7 @@ impl<'a> CookieChange<'a> {
 
 impl<'a> PartialEq for CookieChange<'a> {
     fn eq(&self, other: &Self) -> bool {
-        self.cookie == other.cookie && self.status == other.status
+        self.cookie.name() == other.cookie.name()
     }
 }
 

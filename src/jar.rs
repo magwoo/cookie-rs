@@ -24,7 +24,11 @@ impl<'a> CookieJar<'a> {
     }
 
     pub fn get(&self, name: &str) -> Option<&Cookie<'a>> {
-        self.cookie.get(name)
+        self.changes
+            .iter()
+            .filter_map(|c| c.is_create().then_some(c.cookie()))
+            .find(|c| c.name() == name)
+            .or_else(|| self.cookie.iter().find(|c| c.name() == name))
     }
 
     pub fn add(&mut self, cookie: Cookie<'a>) {

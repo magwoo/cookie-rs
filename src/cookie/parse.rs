@@ -18,7 +18,7 @@ impl<'a> Cookie<'a> {
         Self::inner_parse(value.into(), true)
     }
 
-    fn inner_parse(value: Cow<'a, str>, strict: bool) -> Result<Self, ParseError> {
+    pub(crate) fn inner_parse(value: Cow<'a, str>, strict: bool) -> Result<Self, ParseError> {
         let prison = StringPrison::new(value);
 
         // SAFETY: prison and slice owned by the same struct

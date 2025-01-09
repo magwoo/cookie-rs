@@ -9,7 +9,13 @@ mod prison;
 pub mod cookie;
 pub mod jar;
 
+pub mod error {
+    pub use crate::cookie::parse::error::*;
+}
+
 pub mod prelude {
+    pub use crate::cookie::Cookie;
+    pub use crate::cookie::CookieBuilder;
     pub use crate::cookie::SameSite;
-    pub use crate::*;
+    pub use crate::jar::CookieJar;
 }

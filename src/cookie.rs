@@ -1,4 +1,5 @@
 use std::borrow::{Borrow, Cow};
+use std::fmt;
 use std::time::Duration;
 
 pub use self::builder::CookieBuilder;
@@ -188,8 +189,8 @@ impl<'a> std::str::FromStr for Cookie<'a> {
     }
 }
 
-impl<'a> std::fmt::Display for Cookie<'a> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<'a> fmt::Display for Cookie<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}={}", self.name, self.value)?;
 
         if let Some(domain) = self.domain.as_ref() {
@@ -228,8 +229,8 @@ impl<'a> std::fmt::Display for Cookie<'a> {
     }
 }
 
-impl std::fmt::Display for SameSite {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for SameSite {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             SameSite::Strict => write!(f, "Strict"),
             SameSite::Lax => write!(f, "Lax"),

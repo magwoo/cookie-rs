@@ -37,9 +37,10 @@ fn parse_cookie(str: &str, strict: bool) -> Result<Cookie<'_>, ParseError> {
     let (name, value) = attributes
         .next()
         .expect("Missing any attributes")
-        .trim()
         .split_once('=')
         .ok_or(MissingPair::NameValue)?;
+
+    let (name, value) = (name.trim(), value.trim());
 
     if name.is_empty() {
         return Err(ParseError::EmptyName);
@@ -48,11 +49,11 @@ fn parse_cookie(str: &str, strict: bool) -> Result<Cookie<'_>, ParseError> {
     let mut cookie = Cookie::new(name, value);
 
     for attribute in attributes {
-        let mut pair = attribute.trim().splitn(2, '=');
+        let mut pair = attribute.splitn(2, '=');
 
         let (name, value) = (
-            pair.next().expect("missing any attribute name"),
-            pair.next(),
+            pair.next().expect("missing any attribute name").trim(),
+            pair.next().map(|v| v.trim()),
         );
 
         match value {

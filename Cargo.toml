@@ -1,9 +1,10 @@
 [package]
 name = "cookie-rs"
-version = "0.0.1-alpha"
+version = "0.1.0"
 repository = "https://github.com/magwoo/cookie-rs"
-description = "In work"
+description = "library for working with HTTP cookies"
 keywords = ["cookie", "http", "web"]
+readme = "./README.md"
 license = "MIT"
 edition = "2021"
 

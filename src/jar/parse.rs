@@ -29,11 +29,10 @@ impl<'a> CookieJar<'a> {
 
 fn parse_jar(str: &str, strict: bool) -> Result<CookieJar<'_>, ParseError> {
     let mut jar = CookieJar::default();
-    let cookie = str.split(';');
+    let cookie = str.split(';').map(|p| p.trim()).filter(|p| !p.is_empty());
 
     for pair in cookie {
-        jar.cookie
-            .insert(Cookie::inner_parse(pair.trim().into(), strict)?);
+        jar.cookie.insert(Cookie::inner_parse(pair.into(), strict)?);
     }
 
     Ok(jar)

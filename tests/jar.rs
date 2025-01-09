@@ -22,6 +22,27 @@ fn cookie_jar_remove_cookie() {
 }
 
 #[test]
+fn cookie_jar_empty_string() {
+    let cookie_count = CookieJar::parse("").map(|j| j.cookie().len());
+
+    assert_eq!(cookie_count, Ok(0))
+}
+
+#[test]
+fn cookie_jar_empty_string2() {
+    let cookie_count = CookieJar::parse(" ").map(|j| j.cookie().len());
+
+    assert_eq!(cookie_count, Ok(0))
+}
+
+#[test]
+fn cookie_jar_empty_string3() {
+    let cookie_count = CookieJar::parse(";").map(|j| j.cookie().len());
+
+    assert_eq!(cookie_count, Ok(0))
+}
+
+#[test]
 fn cookie_jar_add_multiple_cookies() {
     let mut jar = CookieJar::default();
     let cookie1 = Cookie::new("name1", "value1");

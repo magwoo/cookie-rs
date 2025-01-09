@@ -1,63 +1,71 @@
+use std::borrow::Cow;
+
 use crate::Cookie;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ChangeStatus {
-    Create,
-    Remove,
+#[derive(Debug, Clone)]
+pub enum CookieChange<'a> {
+    Create(Cookie<'a>),
+    Remove(Cow<'a, str>),
 }
 
-#[derive(Debug, Clone)]
-pub struct CookieChange<'a> {
-    cookie: Cookie<'a>,
-    status: ChangeStatus,
-}
+// #[derive(Debug, Clone)]
+// pub struct CookieChange<'a> {
+//     cookie: Cookie<'a>,
+//     status: ChangeStatus,
+// }
 
 impl<'a> CookieChange<'a> {
     pub fn create(cookie: Cookie<'a>) -> Self {
-        Self {
-            cookie,
-            status: ChangeStatus::Create,
+        Self::Create(cookie)
+    }
+
+    pub fn remove(name: Cow<'a, str>) -> Self {
+        Self::Remove(name)
+    }
+
+    pub fn cookie(&self) -> Option<&Cookie<'a>> {
+        match self {
+            Self::Create(cookie) => Some(cookie),
+            Self::Remove(_) => None,
         }
     }
 
-    pub fn remove(cookie: Cookie<'a>) -> Self {
-        Self {
-            cookie,
-            status: ChangeStatus::Remove,
+    pub fn name(&self) -> &str {
+        match self {
+            Self::Create(cookie) => cookie.name(),
+            Self::Remove(name) => name.as_ref(),
         }
-    }
-
-    pub fn cookie(&self) -> &Cookie<'a> {
-        &self.cookie
-    }
-
-    pub fn status(&self) -> ChangeStatus {
-        self.status
     }
 
     pub fn is_create(&self) -> bool {
-        self.status() == ChangeStatus::Create
+        match self {
+            Self::Create(_) => true,
+            Self::Remove(_) => false,
+        }
     }
 
     pub fn is_remove(&self) -> bool {
-        self.status() == ChangeStatus::Remove
+        !self.is_create()
     }
 
-    pub fn into_cookie(self) -> Cookie<'a> {
-        self.cookie
+    pub fn into_cookie(self) -> Option<Cookie<'a>> {
+        match self {
+            Self::Create(cookie) => Some(cookie),
+            Self::Remove(_) => None,
+        }
     }
 
     pub fn as_header_value(&self) -> String {
-        match self.status {
-            ChangeStatus::Create => self.cookie.to_string(),
-            ChangeStatus::Remove => format!("{}=removed; Max-Age=0", self.cookie.name()),
+        match self {
+            Self::Create(cookie) => cookie.to_string(),
+            Self::Remove(name) => format!("{}=removed; Max-Age=0", name),
         }
     }
 }
 
 impl<'a> PartialEq for CookieChange<'a> {
     fn eq(&self, other: &Self) -> bool {
-        self.cookie.name() == other.cookie.name()
+        self.name() == other.name()
     }
 }
 
@@ -71,6 +79,6 @@ impl<'a> PartialOrd for CookieChange<'a> {
 
 impl<'a> Ord for CookieChange<'a> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.cookie.cmp(&other.cookie)
+        self.name().cmp(other.name())
     }
 }

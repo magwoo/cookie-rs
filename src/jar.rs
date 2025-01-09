@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::BTreeSet;
 
 use crate::cookie::parse::ParseError;
@@ -26,17 +27,17 @@ impl<'a> CookieJar<'a> {
     pub fn get(&self, name: &str) -> Option<&Cookie<'a>> {
         self.changes
             .iter()
-            .filter_map(|c| c.is_create().then_some(c.cookie()))
+            .filter_map(|c| c.is_create().then_some(c.cookie()).flatten())
             .find(|c| c.name() == name)
             .or_else(|| self.cookie.iter().find(|c| c.name() == name))
     }
 
-    pub fn add(&mut self, cookie: Cookie<'a>) {
-        self.changes.replace(CookieChange::create(cookie));
+    pub fn add<C: Into<Cookie<'a>>>(&mut self, cookie: C) {
+        self.changes.replace(CookieChange::create(cookie.into()));
     }
 
-    pub fn remove<C: Into<Cookie<'a>>>(&mut self, cookie: C) {
-        self.changes.replace(CookieChange::remove(cookie.into()));
+    pub fn remove<N: Into<Cow<'a, str>>>(&mut self, name: N) {
+        self.changes.replace(CookieChange::remove(name.into()));
     }
 
     pub fn cookie(&self) -> &BTreeSet<Cookie<'a>> {

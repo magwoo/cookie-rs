@@ -21,20 +21,20 @@
 //! ### Create a Cookie
 //!
 //! ```rust
-//! use cookie_rs::Cookie;
+//! use cookie_rs::prelude::*;
 //!
 //! let cookie = Cookie::builder("session", "abc123")
 //!     .domain("example.com")
 //!     .path("/")
 //!     .secure(true)
 //!     .http_only(true)
-//!     .same_site(cookie_rs::SameSite::Lax)
+//!     .same_site(SameSite::Lax)
 //!     .build();
 //!
 //! println!("{}", cookie.to_string());
 //! ```
 //! Output:
-//! ```
+//! ```text
 //! session=abc123; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Lax
 //! ```
 //!
@@ -101,7 +101,7 @@
 //! }
 //! ```
 //! Output:
-//! ```
+//! ```text
 //! Set-Cookie: name1=value1
 //! Set-Cookie: name2=value2
 //! ```

@@ -15,6 +15,7 @@ pub enum SameSite {
     None,
 }
 
+/// Represents an HTTP cookie, including attributes such as domain, path, and expiration.
 #[derive(Debug, Clone)]
 pub struct Cookie<'a> {
     prison: Option<StringPrison<'a>>,
@@ -31,6 +32,20 @@ pub struct Cookie<'a> {
 }
 
 impl<'a> Cookie<'a> {
+    /// Creates a new `Cookie` with the specified name and value.
+    ///
+    /// # Arguments
+    /// - `name`: The name of the cookie.
+    /// - `value`: The value of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123");
+    /// assert_eq!(cookie.name(), "session");
+    /// assert_eq!(cookie.value(), "abc123");
+    /// ```
     pub fn new<N, V>(name: N, value: V) -> Self
     where
         N: Into<Cow<'a, str>>,
@@ -43,6 +58,21 @@ impl<'a> Cookie<'a> {
         }
     }
 
+    /// Creates a `CookieBuilder` for constructing a `Cookie` with additional attributes.
+    ///
+    /// # Arguments
+    /// - `name`: The name of the cookie.
+    /// - `value`: The value of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::builder("session", "abc123")
+    ///     .domain("example.com")
+    ///     .secure(true)
+    ///     .build();
+    /// ```
     pub fn builder<N, V>(name: N, value: V) -> CookieBuilder<'a>
     where
         N: Into<Cow<'a, str>>,
@@ -51,74 +81,278 @@ impl<'a> Cookie<'a> {
         CookieBuilder::new(name, value)
     }
 
+    /// Sets the domain for the cookie.
+    ///
+    /// # Arguments
+    /// - `domain`: The domain attribute of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_domain("example.com");
+    /// assert_eq!(cookie.domain(), Some("example.com"));
+    /// ```
     pub fn set_domain<V: Into<Cow<'a, str>>>(&mut self, domain: V) {
         self.domain = Some(domain.into())
     }
 
+    /// Sets the expiration date for the cookie.
+    ///
+    /// # Arguments
+    /// - `expires`: The expiration date of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_expires("Wed, 21 Oct 2025 07:28:00 GMT");
+    /// assert_eq!(cookie.expires(), Some("Wed, 21 Oct 2025 07:28:00 GMT"));
+    /// ```
     pub fn set_expires<V: Into<Cow<'a, str>>>(&mut self, expires: V) {
         self.expires = Some(expires.into());
     }
 
+    /// Sets the `HttpOnly` attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `http_only`: Whether the cookie is HttpOnly.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_http_only(true);
+    /// assert_eq!(cookie.http_only(), Some(true));
+    /// ```
     pub fn set_http_only(&mut self, http_only: bool) {
         self.http_only = Some(http_only);
     }
 
+    /// Sets the maximum age for the cookie.
+    ///
+    /// # Arguments
+    /// - `max_age`: The maximum age of the cookie as a `Duration`.
+    ///
+    /// # Example
+    /// ```
+    /// use std::time::Duration;
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_max_age(Duration::from_secs(3600));
+    /// assert_eq!(cookie.max_age(), Some(Duration::from_secs(3600)));
+    /// ```
     pub fn set_max_age<V: Into<Duration>>(&mut self, max_age: V) {
         self.max_age = Some(max_age.into());
     }
 
+    /// Sets the partitioned attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `partitioned`: Whether the cookie is partitioned.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_partitioned(true);
+    /// assert_eq!(cookie.partitioned(), Some(true));
+    /// ```
     pub fn set_partitioned(&mut self, partitioned: bool) {
         self.partitioned = Some(partitioned);
     }
 
+    /// Sets the path attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `path`: The path attribute of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_path("/");
+    /// assert_eq!(cookie.path(), Some("/"));
+    /// ```
     pub fn set_path<V: Into<Cow<'a, str>>>(&mut self, path: V) {
         self.path = Some(path.into());
     }
 
+    /// Sets the `SameSite` attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `same_site`: The `SameSite` attribute for the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_same_site(SameSite::Lax);
+    /// assert_eq!(cookie.same_site(), Some(SameSite::Lax));
+    /// ```
     pub fn set_same_site(&mut self, same_site: SameSite) {
         self.same_site = Some(same_site);
     }
 
+    /// Sets the `Secure` attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `secure`: Whether the cookie is secure.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_secure(true);
+    /// assert_eq!(cookie.secure(), Some(true));
+    /// ```
     pub fn set_secure(&mut self, secure: bool) {
         self.secure = Some(secure);
     }
 
+    /// Returns the name of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123");
+    /// assert_eq!(cookie.name(), "session");
+    /// ```
     pub fn name(&self) -> &str {
         self.name.as_ref()
     }
 
+    /// Returns the value of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123");
+    /// assert_eq!(cookie.value(), "abc123");
+    /// ```
     pub fn value(&self) -> &str {
         self.value.as_ref()
     }
 
+    /// Returns the domain of the cookie, if set.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_domain("example.com");
+    /// assert_eq!(cookie.domain(), Some("example.com"));
+    /// ```
     pub fn domain(&self) -> Option<&str> {
         self.domain.as_deref()
     }
 
+    /// Returns the expiration date of the cookie, if set.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_expires("Wed, 21 Oct 2025 07:28:00 GMT");
+    /// assert_eq!(cookie.expires(), Some("Wed, 21 Oct 2025 07:28:00 GMT"));
+    /// ```
     pub fn expires(&self) -> Option<&str> {
-        self.domain.as_deref()
+        self.expires.as_deref()
     }
 
+    /// Returns whether the cookie has the `HttpOnly` attribute set.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_http_only(true);
+    /// assert_eq!(cookie.http_only(), Some(true));
+    /// ```
     pub fn http_only(&self) -> Option<bool> {
         self.http_only
     }
 
+    /// Returns the maximum age of the cookie, if set.
+    ///
+    /// # Example
+    /// ```
+    /// use std::time::Duration;
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_max_age(Duration::from_secs(3600));
+    /// assert_eq!(cookie.max_age(), Some(Duration::from_secs(3600)));
+    /// ```
     pub fn max_age(&self) -> Option<Duration> {
         self.max_age
     }
 
+    /// Returns whether the cookie is partitioned.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_partitioned(true);
+    /// assert_eq!(cookie.partitioned(), Some(true));
+    /// ```
     pub fn partitioned(&self) -> Option<bool> {
         self.partitioned
     }
 
+    /// Returns the path of the cookie, if set.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_path("/");
+    /// assert_eq!(cookie.path(), Some("/"));
+    /// ```
     pub fn path(&self) -> Option<&str> {
         self.path.as_deref()
     }
 
+    /// Returns the `SameSite` attribute of the cookie, if set.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_same_site(SameSite::Lax);
+    /// assert_eq!(cookie.same_site(), Some(SameSite::Lax));
+    /// ```
     pub fn same_site(&self) -> Option<SameSite> {
         self.same_site
     }
 
+    /// Returns whether the cookie has the `Secure` attribute set.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut cookie = Cookie::new("session", "abc123");
+    /// cookie.set_secure(true);
+    /// assert_eq!(cookie.secure(), Some(true));
+    /// ```
     pub fn secure(&self) -> Option<bool> {
         self.secure
     }

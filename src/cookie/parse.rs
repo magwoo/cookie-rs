@@ -1,3 +1,24 @@
+//! Parsing utilities for `Cookie`.
+//!
+//! This module provides functionality for parsing `Cookie` instances from strings.
+//! It supports both strict and lenient parsing modes and handles attributes such as
+//! `Domain`, `Path`, `Max-Age`, `Secure`, and more.
+//!
+//! # Features
+//! - Flexible parsing with `parse` and `parse_strict` methods.
+//! - Detailed error handling using `ParseError` and `ParseSameSiteError`.
+//! - Support for common cookie attributes.
+//!
+//! # Example
+//! ```
+//! use cookie_rs::prelude::*;
+//!
+//! let cookie = Cookie::parse("session=abc123; Path=/; Secure").unwrap();
+//! assert_eq!(cookie.name(), "session");
+//! assert_eq!(cookie.value(), "abc123");
+//! assert_eq!(cookie.path(), Some("/"));
+//! assert_eq!(cookie.secure(), Some(true));
+//! ```
 use std::borrow::Cow;
 use std::time::Duration;
 
@@ -10,10 +31,46 @@ pub use self::error::*;
 pub mod error;
 
 impl<'a> Cookie<'a> {
+    /// Parses a cookie from a string in a lenient mode.
+    ///
+    /// In lenient mode, unknown attributes are ignored.
+    ///
+    /// # Arguments
+    /// - `value`: The string representation of the cookie.
+    ///
+    /// # Returns
+    /// A `Result` containing the parsed `Cookie` or a `ParseError`.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::parse("session=abc123; Secure").unwrap();
+    /// assert_eq!(cookie.name(), "session");
+    /// assert_eq!(cookie.value(), "abc123");
+    /// assert_eq!(cookie.secure(), Some(true));
+    /// ```
     pub fn parse<V: Into<Cow<'a, str>>>(value: V) -> Result<Self, ParseError> {
         Self::inner_parse(value.into(), false)
     }
 
+    /// Parses a cookie from a string in a strict mode.
+    ///
+    /// In strict mode, unknown attributes cause an error.
+    ///
+    /// # Arguments
+    /// - `value`: The string representation of the cookie.
+    ///
+    /// # Returns
+    /// A `Result` containing the parsed `Cookie` or a `ParseError`.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let result = Cookie::parse_strict("session=abc123; UnknownAttr");
+    /// assert!(result.is_err());
+    /// ```
     pub fn parse_strict<V: Into<Cow<'a, str>>>(value: V) -> Result<Self, ParseError> {
         Self::inner_parse(value.into(), true)
     }
@@ -84,6 +141,21 @@ fn parse_cookie(str: &str, strict: bool) -> Result<Cookie<'_>, ParseError> {
 }
 
 impl SameSite {
+    /// Parses a `SameSite` attribute value.
+    ///
+    /// # Arguments
+    /// - `value`: The string representation of the `SameSite` value.
+    ///
+    /// # Returns
+    /// A `Result` containing the parsed `SameSite` or a `ParseSameSiteError`.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let same_site = SameSite::parse("Strict").unwrap();
+    /// assert_eq!(same_site, SameSite::Strict);
+    /// ```
     pub fn parse(value: &str) -> Result<Self, ParseSameSiteError> {
         if value.eq_ignore_ascii_case("strict") {
             Ok(Self::Strict)

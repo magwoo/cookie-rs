@@ -1,4 +1,4 @@
-use cookie::parse::ParseError;
+use cookie_rs::error::*;
 use cookie_rs::prelude::*;
 
 #[test]
@@ -27,9 +27,7 @@ fn empty_value() {
 
 #[test]
 fn empty_input() {
-    let expected = Err(ParseError::MissingPair(
-        cookie::parse::MissingPair::NameValue,
-    ));
+    let expected = Err(ParseError::MissingPair(MissingPair::NameValue));
     let input = "";
 
     assert_eq!(Cookie::parse(input), expected)
@@ -133,9 +131,7 @@ fn cookie_with_multiple_attributes() {
 
 #[test]
 fn malformed_cookie_missing_equals() {
-    let expected = Err(ParseError::MissingPair(
-        cookie::parse::MissingPair::NameValue,
-    ));
+    let expected = Err(ParseError::MissingPair(MissingPair::NameValue));
     let input = "namevalue";
 
     assert_eq!(Cookie::parse(input), expected);
@@ -194,9 +190,7 @@ fn cookie_with_unexpected_whitespace() {
 
 #[test]
 fn cookie_with_empty_pair() {
-    let expected = Err(ParseError::MissingPair(
-        cookie::parse::MissingPair::NameValue,
-    ));
+    let expected = Err(ParseError::MissingPair(MissingPair::NameValue));
     let input = ";";
 
     assert_eq!(Cookie::parse(input), expected);
@@ -223,7 +217,7 @@ fn cookie_with_invalid_max_age() {
 #[test]
 fn cookie_with_invalid_samesite_value() {
     let expected = Err(ParseError::ParseSameSiteError(
-        cookie::parse::ParseSameSiteError::UnknownValue("InvalidValue".to_string()),
+        ParseSameSiteError::UnknownValue("InvalidValue".to_string()),
     ));
     let input = "name=value; SameSite=InvalidValue";
 
@@ -240,9 +234,7 @@ fn cookie_with_trailing_semicolon() {
 
 #[test]
 fn cookie_with_invalid_format() {
-    let expected = Err(ParseError::MissingPair(
-        cookie::parse::MissingPair::NameValue,
-    ));
+    let expected = Err(ParseError::MissingPair(MissingPair::NameValue));
     let input = "name-value";
 
     assert_eq!(Cookie::parse(input), expected);

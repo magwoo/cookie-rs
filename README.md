@@ -13,7 +13,7 @@ To use this library, add it to your dependencies:
 ```diff
 [dependencies]
 ...
-+ cookie-rs = "0.1.0"
++ cookie-rs = "0.2.0"
 ```
 
 ### Create a Cookie

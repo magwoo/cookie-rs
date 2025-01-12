@@ -1,7 +1,8 @@
+![cercis-preview](./.github/assets/preview.png)
+
 # Cookie Library
 
 `cookie-rs` is a flexible library for working with HTTP cookies. It allows you to create, parse, and manage cookies.
-![cercis-preview](./.github/assets/preview.png)
 
 ## Features
 

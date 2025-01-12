@@ -1,7 +1,10 @@
 # Cookie Library
+
 `cookie-rs` is a flexible library for working with HTTP cookies. It allows you to create, parse, and manage cookies.
+![cercis-preview](./.github/assets/preview.png)
 
 ## Features
+
 - Create cookies with various attributes (e.g., `Domain`, `Path`, `Secure`, `HttpOnly`).
 - Parse cookies from HTTP headers.
 - Manage cookies using `CookieJar`, which tracks additions and removals.
@@ -9,7 +12,9 @@
 - Errors are handled gracefully through `ParseError`.
 
 ## Quick Start
+
 To use this library, add it to your dependencies:
+
 ```diff
 [dependencies]
 ...
@@ -17,6 +22,7 @@ To use this library, add it to your dependencies:
 ```
 
 ### Create a Cookie
+
 ```rust
 use cookie_rs::Cookie;
 let cookie = Cookie::builder("session", "abc123")
@@ -28,12 +34,15 @@ let cookie = Cookie::builder("session", "abc123")
     .build();
 println!("{}", cookie.to_string());
 ```
+
 Output:
+
 ```
 session=abc123; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Lax
 ```
 
 ### Parse a Cookie
+
 ```rust
 use cookie_rs::Cookie;
 let cookie_str = "session=abc123; Secure; HttpOnly";
@@ -45,6 +54,7 @@ assert_eq!(cookie.http_only(), Some(true));
 ```
 
 ### Manage Cookies with `CookieJar`
+
 ```rust
 use cookie_rs::{Cookie, CookieJar};
 let mut jar = CookieJar::default();
@@ -61,6 +71,7 @@ assert!(jar.get("user").is_none());
 ```
 
 ### Parse Multiple Cookies from a Header
+
 ```rust
 use cookie_rs::CookieJar;
 let cookie_header = "name1=value1; name2=value2";
@@ -70,6 +81,7 @@ assert!(jar.get("name2").is_some());
 ```
 
 ### Convert Cookies to HTTP Header Values
+
 ```rust
 use cookie_rs::{Cookie, CookieJar};
 let mut jar = CookieJar::default();
@@ -80,7 +92,9 @@ for header in headers {
     println!("Set-Cookie: {}", header);
 }
 ```
+
 Output:
+
 ```
 Set-Cookie: name1=value1
 Set-Cookie: name2=value2

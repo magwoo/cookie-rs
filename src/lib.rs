@@ -15,7 +15,7 @@
 //! ```diff
 //! [dependencies]
 //! ...
-//! + cookie-rs = "0.2.0"
+//! + cookie-rs = "0.2.1"
 //! ```
 //!
 //! ### Create a Cookie

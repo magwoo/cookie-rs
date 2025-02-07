@@ -218,6 +218,159 @@ impl<'a> Cookie<'a> {
         self.secure = Some(secure);
     }
 
+    /// Sets the domain for the cookie.
+    ///
+    /// # Arguments
+    /// - `domain`: The domain attribute of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123").with_domain("example.com");
+    ///
+    /// assert_eq!(cookie.domain(), Some("example.com"));
+    /// ```
+    pub fn with_domain<V: Into<Cow<'a, str>>>(mut self, domain: V) -> Self {
+        self.set_domain(domain);
+
+        self
+    }
+
+    /// Sets the expiration date for the cookie.
+    ///
+    /// # Arguments
+    /// - `expires`: The expiration date of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123").with_expires("Wed, 21 Oct 2025 07:28:00 GMT");
+    ///
+    /// assert_eq!(cookie.expires(), Some("Wed, 21 Oct 2025 07:28:00 GMT"));
+    /// ```
+    pub fn with_expires<V: Into<Cow<'a, str>>>(mut self, expires: V) -> Self {
+        self.set_expires(expires);
+
+        self
+    }
+
+    /// Sets the `HttpOnly` attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `http_only`: Whether the cookie is HttpOnly.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123").with_http_only(true);
+    ///
+    /// assert_eq!(cookie.http_only(), Some(true));
+    /// ```
+    pub fn with_http_only(mut self, http_only: bool) -> Self {
+        self.set_http_only(http_only);
+
+        self
+    }
+
+    /// Sets the maximum age for the cookie.
+    ///
+    /// # Arguments
+    /// - `max_age`: The maximum age of the cookie as a `Duration`.
+    ///
+    /// # Example
+    /// ```
+    /// use std::time::Duration;
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123").with_max_age(Duration::from_secs(3600));
+    ///
+    /// assert_eq!(cookie.max_age(), Some(Duration::from_secs(3600)));
+    /// ```
+    pub fn with_max_age<V: Into<Duration>>(mut self, max_age: V) -> Self {
+        self.set_max_age(max_age);
+
+        self
+    }
+
+    /// Sets the partitioned attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `partitioned`: Whether the cookie is partitioned.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123").with_partitioned(true);
+    ///
+    /// assert_eq!(cookie.partitioned(), Some(true));
+    /// ```
+    pub fn with_partitioned(mut self, partitioned: bool) -> Self {
+        self.set_partitioned(partitioned);
+
+        self
+    }
+
+    /// Sets the `Secure` attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `secure`: Whether the cookie is secure.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123").with_secure(true);
+    ///
+    /// assert_eq!(cookie.secure(), Some(true));
+    /// ```
+    pub fn with_secure(mut self, secure: bool) -> Self {
+        self.set_secure(secure);
+
+        self
+    }
+
+    /// Sets the path attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `path`: The path attribute of the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123").with_path("/");
+    ///
+    /// assert_eq!(cookie.path(), Some("/"));
+    /// ```
+    pub fn with_path<V: Into<Cow<'a, str>>>(mut self, path: V) -> Self {
+        self.set_path(path);
+
+        self
+    }
+
+    /// Sets the `SameSite` attribute for the cookie.
+    ///
+    /// # Arguments
+    /// - `same_site`: The `SameSite` attribute for the cookie.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let cookie = Cookie::new("session", "abc123").with_same_site(SameSite::Lax);
+    ///
+    /// assert_eq!(cookie.same_site(), Some(SameSite::Lax));
+    /// ```
+    pub fn with_same_site(mut self, same_site: SameSite) -> Self {
+        self.set_same_site(same_site);
+
+        self
+    }
+
     /// Returns the name of the cookie.
     ///
     /// # Example

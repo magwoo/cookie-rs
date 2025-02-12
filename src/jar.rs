@@ -84,6 +84,24 @@ impl<'a> CookieJar<'a> {
         self.changes.replace(CookieChange::create(cookie.into()));
     }
 
+    /// Adds a new cookie to the jar or replaces an existing one with the same name.
+    ///
+    /// # Arguments
+    /// - `cookie`: The cookie to add to the jar.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut jar = CookieJar::default();
+    /// jar.set(Cookie::new("session", "abc123"));
+    /// ```
+    ///
+    /// > alias for `CookieJar::add`
+    pub fn set<C: Into<Cookie<'a>>>(&mut self, cookie: C) {
+        self.add(cookie);
+    }
+
     /// Removes a cookie from the jar by its name.
     ///
     /// # Arguments

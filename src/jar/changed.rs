@@ -63,21 +63,21 @@ impl<'a> CookieChange<'a> {
     }
 }
 
-impl<'a> PartialEq for CookieChange<'a> {
+impl PartialEq for CookieChange<'_> {
     fn eq(&self, other: &Self) -> bool {
         self.name() == other.name()
     }
 }
 
-impl<'a> Eq for CookieChange<'a> {}
+impl Eq for CookieChange<'_> {}
 
-impl<'a> PartialOrd for CookieChange<'a> {
+impl PartialOrd for CookieChange<'_> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<'a> Ord for CookieChange<'a> {
+impl Ord for CookieChange<'_> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.name().cmp(other.name())
     }

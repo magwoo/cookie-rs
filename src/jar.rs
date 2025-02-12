@@ -167,7 +167,7 @@ impl<'a> CookieJar<'a> {
     }
 }
 
-impl<'a> std::str::FromStr for CookieJar<'a> {
+impl std::str::FromStr for CookieJar<'_> {
     type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {

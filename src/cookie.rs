@@ -511,7 +511,7 @@ impl<'a> Cookie<'a> {
     }
 }
 
-impl<'a> PartialEq for Cookie<'a> {
+impl PartialEq for Cookie<'_> {
     fn eq(&self, other: &Self) -> bool {
         match (self.domain.as_ref(), other.domain.as_ref()) {
             (Some(a), Some(b)) if a.eq_ignore_ascii_case(b) => (),
@@ -536,21 +536,21 @@ impl<'a> PartialEq for Cookie<'a> {
     }
 }
 
-impl<'a> Eq for Cookie<'a> {}
+impl Eq for Cookie<'_> {}
 
-impl<'a> PartialOrd for Cookie<'a> {
+impl PartialOrd for Cookie<'_> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<'a> Ord for Cookie<'a> {
+impl Ord for Cookie<'_> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.name.cmp(&other.name)
     }
 }
 
-impl<'a> Borrow<str> for Cookie<'a> {
+impl Borrow<str> for Cookie<'_> {
     fn borrow(&self) -> &str {
         self.name()
     }
@@ -568,7 +568,7 @@ impl<'a> From<(&'a str, &'a str)> for Cookie<'a> {
     }
 }
 
-impl<'a> std::str::FromStr for Cookie<'a> {
+impl std::str::FromStr for Cookie<'_> {
     type Err = parse::ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -576,7 +576,7 @@ impl<'a> std::str::FromStr for Cookie<'a> {
     }
 }
 
-impl<'a> fmt::Display for Cookie<'a> {
+impl fmt::Display for Cookie<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}={}", self.name, self.value)?;
 
@@ -626,7 +626,7 @@ impl fmt::Display for SameSite {
     }
 }
 
-impl<'a> Default for Cookie<'a> {
+impl Default for Cookie<'_> {
     fn default() -> Self {
         Self {
             prison: None,

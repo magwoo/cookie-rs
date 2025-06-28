@@ -8,12 +8,6 @@ pub enum CookieChange<'a> {
     Remove(Cow<'a, str>),
 }
 
-// #[derive(Debug, Clone)]
-// pub struct CookieChange<'a> {
-//     cookie: Cookie<'a>,
-//     status: ChangeStatus,
-// }
-
 impl<'a> CookieChange<'a> {
     pub fn create(cookie: Cookie<'a>) -> Self {
         Self::Create(cookie)

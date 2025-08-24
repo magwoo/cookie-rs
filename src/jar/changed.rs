@@ -52,7 +52,7 @@ impl<'a> CookieChange<'a> {
     pub fn as_header_value(&self) -> String {
         match self {
             Self::Create(cookie) => cookie.to_string(),
-            Self::Remove(name) => format!("{}=removed; Max-Age=0", name),
+            Self::Remove(name) => format!("{name}=removed; Max-Age=0"),
         }
     }
 }

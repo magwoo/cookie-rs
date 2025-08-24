@@ -581,11 +581,11 @@ impl fmt::Display for Cookie<'_> {
         write!(f, "{}={}", self.name, self.value)?;
 
         if let Some(domain) = self.domain.as_ref() {
-            write!(f, "; Domain={}", domain)?;
+            write!(f, "; Domain={domain}")?;
         }
 
         if let Some(expires) = self.expires.as_ref() {
-            write!(f, "; Expires={}", expires)?;
+            write!(f, "; Expires={expires}")?;
         }
 
         if self.http_only.is_some_and(|v| v) {
@@ -601,11 +601,11 @@ impl fmt::Display for Cookie<'_> {
         }
 
         if let Some(path) = self.path.as_ref() {
-            write!(f, "; Path={}", path)?;
+            write!(f, "; Path={path}")?;
         }
 
         if let Some(same_site) = self.same_site {
-            write!(f, "; SameSite={}", same_site)?;
+            write!(f, "; SameSite={same_site}")?;
         }
 
         if self.secure.is_some_and(|v| v) {

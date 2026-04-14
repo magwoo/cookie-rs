@@ -179,3 +179,41 @@ fn cookie_jar_cookie_count_after_add_and_remove() {
     assert!(jar.get("b").is_none());
     assert!(jar.get("c").is_some());
 }
+
+#[test]
+fn cookie_jar_len() {
+    let mut jar = CookieJar::default();
+
+    assert_eq!(jar.len(), 0);
+
+    jar.add(Cookie::new("a", "1"));
+    jar.add(Cookie::new("b", "2"));
+
+    assert_eq!(jar.len(), 2);
+
+    jar.remove("a");
+
+    assert_eq!(jar.len(), 1);
+}
+
+#[test]
+fn cookie_jar_is_empty() {
+    let mut jar = CookieJar::default();
+
+    assert!(jar.is_empty());
+
+    jar.add(Cookie::new("session", "abc123"));
+
+    assert!(!jar.is_empty());
+}
+
+#[test]
+fn cookie_jar_len_with_parsed() {
+    let mut jar = CookieJar::parse("a=1; b=2; c=3").unwrap();
+
+    assert_eq!(jar.len(), 3);
+
+    jar.remove("b");
+
+    assert_eq!(jar.len(), 2);
+}

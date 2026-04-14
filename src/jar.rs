@@ -135,6 +135,34 @@ impl<'a> CookieJar<'a> {
         )
     }
 
+    /// Returns the number of cookies in the jar.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let mut jar = CookieJar::default();
+    /// jar.add(Cookie::new("session", "abc123"));
+    ///
+    /// assert_eq!(jar.len(), 1);
+    /// ```
+    pub fn len(&self) -> usize {
+        self.cookie().count()
+    }
+
+    /// Returns `true` if the jar contains no cookies.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let jar = CookieJar::default();
+    /// assert!(jar.is_empty());
+    /// ```
+    pub fn is_empty(&self) -> bool {
+        self.cookie().next().is_none()
+    }
+
     /// Returns a reference to all changes (additions and removals) in the jar.
     ///
     /// # Example

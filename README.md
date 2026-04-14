@@ -7,9 +7,10 @@
 ## Features
 
 - Create cookies with various attributes (e.g., `Domain`, `Path`, `Secure`, `HttpOnly`).
-- Parse cookies from HTTP headers.
+- Parse cookies from HTTP headers in lenient or strict mode.
 - Manage cookies using `CookieJar`, which tracks additions and removals.
 - Support for `SameSite` attribute.
+- Automatic percent-encoding and decoding of cookie values (enabled by default).
 - Errors are handled gracefully through `ParseError`.
 
 ## Quick Start
@@ -19,7 +20,7 @@ To use this library, add it to your dependencies:
 ```diff
 [dependencies]
 ...
-+ cookie-rs = "0.4.1"
++ cookie-rs = "0.5.0"
 ```
 
 ### Create a Cookie
@@ -41,57 +42,82 @@ println!("{}", cookie.to_string());
 Output:
 
 ```text,ignore
-session=abc123; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Lax
+session=abc123; Domain=example.com; HttpOnly; Path=/; SameSite=Lax; Secure
 ```
 
 ### Parse a Cookie
 
 ```rust
 use cookie_rs::Cookie;
-let cookie_str = "session=abc123; Secure; HttpOnly";
-let cookie = Cookie::parse(cookie_str).expect("Failed to parse cookie");
+
+let cookie = Cookie::parse("session=abc123; Secure; HttpOnly").unwrap();
 assert_eq!(cookie.name(), "session");
 assert_eq!(cookie.value(), "abc123");
 assert_eq!(cookie.secure(), Some(true));
 assert_eq!(cookie.http_only(), Some(true));
 ```
 
+### Percent-Encoding
+
+Cookie values are automatically percent-encoded when serialized and decoded when parsed.
+This behavior is enabled by default and can be disabled via Cargo features.
+
+```rust
+use cookie_rs::prelude::*;
+
+let cookie = Cookie::new("data", "hello world");
+assert_eq!(cookie.to_string(), "data=hello%20world");
+
+let parsed = Cookie::parse("data=hello%20world").unwrap();
+assert_eq!(parsed.value(), "hello world");
+```
+
+To disable encoding:
+
+```toml
+[dependencies]
+cookie-rs = { version = "0.5.0", default-features = false }
+```
+
 ### Manage Cookies with `CookieJar`
 
 ```rust
 use cookie_rs::{Cookie, CookieJar};
+
 let mut jar = CookieJar::default();
-// Add a cookie
-let cookie = Cookie::new("user", "john");
-jar.add(cookie);
-// Retrieve a cookie
+
+jar.add(Cookie::new("user", "john"));
+
 if let Some(cookie) = jar.get("user") {
     println!("Found cookie: {}={}.", cookie.name(), cookie.value());
 }
-// Remove a cookie
+
 jar.remove("user");
 assert!(jar.get("user").is_none());
 ```
 
-### Parse Multiple Cookies from a Header
+### Parse a `Cookie` Request Header
+
+`CookieJar::parse` accepts the `Cookie` request header format (`name=value` pairs separated by `; `).
 
 ```rust
 use cookie_rs::CookieJar;
-let cookie_header = "name1=value1; name2=value2";
-let jar = CookieJar::parse(cookie_header).expect("Failed to parse cookies");
+
+let jar = CookieJar::parse("name1=value1; name2=value2").unwrap();
 assert!(jar.get("name1").is_some());
 assert!(jar.get("name2").is_some());
 ```
 
-### Convert Cookies to HTTP Header Values
+### Generate `Set-Cookie` Response Headers
 
 ```rust
 use cookie_rs::{Cookie, CookieJar};
+
 let mut jar = CookieJar::default();
 jar.add(Cookie::new("name1", "value1"));
 jar.add(Cookie::new("name2", "value2"));
-let headers = jar.as_header_values();
-for header in headers {
+
+for header in jar.as_header_values() {
     println!("Set-Cookie: {}", header);
 }
 ```
@@ -101,4 +127,16 @@ Output:
 ```text,ignore
 Set-Cookie: name1=value1
 Set-Cookie: name2=value2
+```
+
+### Owned Cookies
+
+To detach a cookie from the lifetime of the source string use `into_owned`:
+
+```rust
+use cookie_rs::prelude::*;
+
+fn parse_session(header: &str) -> Cookie<'static> {
+    Cookie::parse(header).unwrap().into_owned()
+}
 ```

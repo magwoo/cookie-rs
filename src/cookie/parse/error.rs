@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fmt;
 use std::num::ParseIntError;
 
+#[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ParseError {
     EmptyName,

@@ -61,11 +61,10 @@ impl<'a> CookieJar<'a> {
     /// assert!(cookie.is_some());
     /// ```
     pub fn get(&self, name: &str) -> Option<&Cookie<'a>> {
-        self.changes
-            .iter()
-            .filter_map(|c| c.is_create().then_some(c.cookie()).flatten())
-            .find(|c| c.name() == name)
-            .or_else(|| self.cookie.iter().find(|c| c.name() == name))
+        match self.changes.iter().find(|c| c.name() == name) {
+            Some(change) => change.cookie(),
+            None => self.cookie.iter().find(|c| c.name() == name),
+        }
     }
 
     /// Adds a new cookie to the jar or replaces an existing one with the same name.
@@ -142,7 +141,9 @@ impl<'a> CookieJar<'a> {
             });
 
         self.cookie.iter().for_each(|c| {
-            cookie.insert(c);
+            if !self.changes.iter().any(|ch| ch.name() == c.name()) {
+                cookie.insert(c);
+            }
         });
 
         cookie

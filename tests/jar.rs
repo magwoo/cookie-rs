@@ -104,3 +104,79 @@ fn cookie_jar_overwrite_cookie() {
 
     assert_eq!(jar.get("name"), Some(&cookie2));
 }
+
+#[test]
+fn cookie_jar_get_after_remove_from_parsed() {
+    let mut jar = CookieJar::parse("session=abc123; user=bob").unwrap();
+
+    jar.remove("session");
+
+    assert!(jar.get("session").is_none());
+    assert!(jar.get("user").is_some());
+}
+
+#[test]
+fn cookie_jar_cookie_set_excludes_removed_from_parsed() {
+    let mut jar = CookieJar::parse("a=1; b=2; c=3").unwrap();
+
+    jar.remove("b");
+
+    let cookies = jar.cookie();
+    assert_eq!(cookies.len(), 2);
+    assert!(cookies.iter().any(|c| c.name() == "a"));
+    assert!(!cookies.iter().any(|c| c.name() == "b"));
+    assert!(cookies.iter().any(|c| c.name() == "c"));
+}
+
+#[test]
+fn cookie_jar_remove_then_add_same_name() {
+    let mut jar = CookieJar::parse("session=old").unwrap();
+
+    jar.remove("session");
+    jar.add(Cookie::new("session", "new"));
+
+    assert_eq!(jar.get("session").unwrap().value(), "new");
+}
+
+#[test]
+fn cookie_jar_remove_nonexistent() {
+    let mut jar = CookieJar::default();
+
+    jar.remove("ghost");
+
+    assert!(jar.get("ghost").is_none());
+    assert!(jar.cookie().is_empty());
+}
+
+#[test]
+fn cookie_jar_changes_count_after_operations() {
+    let mut jar = CookieJar::default();
+
+    jar.add(Cookie::new("x", "1"));
+    jar.remove("x");
+
+    assert_eq!(jar.changes().len(), 1);
+    assert!(jar.get("x").is_none());
+}
+
+#[test]
+fn cookie_jar_get_unknown_returns_none() {
+    let jar = CookieJar::parse("a=1; b=2").unwrap();
+
+    assert!(jar.get("c").is_none());
+}
+
+#[test]
+fn cookie_jar_cookie_count_after_add_and_remove() {
+    let mut jar = CookieJar::default();
+
+    jar.add(Cookie::new("a", "1"));
+    jar.add(Cookie::new("b", "2"));
+    jar.add(Cookie::new("c", "3"));
+    jar.remove("b");
+
+    assert_eq!(jar.cookie().len(), 2);
+    assert!(jar.get("a").is_some());
+    assert!(jar.get("b").is_none());
+    assert!(jar.get("c").is_some());
+}

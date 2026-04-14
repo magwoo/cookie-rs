@@ -509,6 +509,34 @@ impl<'a> Cookie<'a> {
     pub fn secure(&self) -> Option<bool> {
         self.secure
     }
+
+    /// Converts the cookie into an owned version with a `'static` lifetime.
+    ///
+    /// # Example
+    /// ```
+    /// use cookie_rs::prelude::*;
+    ///
+    /// let input = String::from("session=abc123; Path=/");
+    /// let cookie: Cookie<'static> = Cookie::parse(input).unwrap().into_owned();
+    ///
+    /// assert_eq!(cookie.name(), "session");
+    /// assert_eq!(cookie.path(), Some("/"));
+    /// ```
+    pub fn into_owned(self) -> Cookie<'static> {
+        Cookie {
+            prison: None,
+            name: Cow::Owned(self.name.into_owned()),
+            value: Cow::Owned(self.value.into_owned()),
+            domain: self.domain.map(|v| Cow::Owned(v.into_owned())),
+            expires: self.expires.map(|v| Cow::Owned(v.into_owned())),
+            http_only: self.http_only,
+            max_age: self.max_age,
+            partitioned: self.partitioned,
+            path: self.path.map(|v| Cow::Owned(v.into_owned())),
+            same_site: self.same_site,
+            secure: self.secure,
+        }
+    }
 }
 
 impl PartialEq for Cookie<'_> {

@@ -277,3 +277,36 @@ fn cookie_with_non_ascii_name() {
 
     assert_eq!(Cookie::parse(input), Ok(expected));
 }
+
+#[test]
+fn cookie_into_owned_preserves_fields() {
+    let input = String::from("session=abc123; Path=/; Domain=example.com; Secure");
+    let cookie: Cookie<'static> = Cookie::parse(input).unwrap().into_owned();
+
+    assert_eq!(cookie.name(), "session");
+    assert_eq!(cookie.value(), "abc123");
+    assert_eq!(cookie.path(), Some("/"));
+    assert_eq!(cookie.domain(), Some("example.com"));
+    assert_eq!(cookie.secure(), Some(true));
+}
+
+#[test]
+fn cookie_into_owned_from_borrowed() {
+    let cookie: Cookie<'static> = Cookie::new("name", "value").into_owned();
+
+    assert_eq!(cookie.name(), "name");
+    assert_eq!(cookie.value(), "value");
+}
+
+#[test]
+fn cookie_into_owned_with_all_attributes() {
+    let input =
+        String::from("name=value; Domain=example.com; Path=/; Secure; HttpOnly; SameSite=Strict");
+    let cookie: Cookie<'static> = Cookie::parse(input).unwrap().into_owned();
+
+    assert_eq!(cookie.domain(), Some("example.com"));
+    assert_eq!(cookie.path(), Some("/"));
+    assert_eq!(cookie.secure(), Some(true));
+    assert_eq!(cookie.http_only(), Some(true));
+    assert_eq!(cookie.same_site(), Some(SameSite::Strict));
+}

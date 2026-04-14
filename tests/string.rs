@@ -129,3 +129,33 @@ fn cookie_with_expires() {
 
     assert_eq!(input.to_string(), expected);
 }
+
+#[cfg(feature = "percent-encoding")]
+#[test]
+fn cookie_value_encoded_in_display() {
+    let cookie = Cookie::new("data", "hello world");
+    assert_eq!(cookie.to_string(), "data=hello%20world");
+}
+
+#[cfg(feature = "percent-encoding")]
+#[test]
+fn cookie_value_encoded_utf8() {
+    let cookie = Cookie::new("data", "привет");
+    assert!(cookie.to_string().starts_with("data=%"));
+}
+
+#[cfg(feature = "percent-encoding")]
+#[test]
+fn cookie_value_encoding_roundtrip() {
+    let original = "привет мир! #$%&";
+    let cookie = Cookie::new("data", original);
+    let parsed = Cookie::parse(cookie.to_string()).unwrap();
+    assert_eq!(parsed.value(), original);
+}
+
+#[cfg(feature = "percent-encoding")]
+#[test]
+fn cookie_safe_value_not_encoded() {
+    let cookie = Cookie::new("data", "hello-world_123");
+    assert_eq!(cookie.to_string(), "data=hello-world_123");
+}

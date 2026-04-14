@@ -10,6 +10,7 @@ pub enum ParseError {
     UnknownAttribute(String),
     ParseMaxAgeError(ParseIntError),
     ParseSameSiteError(ParseSameSiteError),
+    ParseDecodeError,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -57,6 +58,7 @@ impl fmt::Display for ParseError {
             ParseError::UnknownAttribute(attr) => write!(f, "unknown attribute: {attr}"),
             ParseError::ParseMaxAgeError(err) => write!(f, "failed to parse Max-Age: {err}"),
             ParseError::ParseSameSiteError(err) => write!(f, "failed to parse SameSite: {err}"),
+            ParseError::ParseDecodeError => write!(f, "failed to decode percent-encoded value."),
         }
     }
 }

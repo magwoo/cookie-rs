@@ -103,7 +103,15 @@ fn parse_cookie(str: &str, strict: bool) -> Result<Cookie<'_>, ParseError> {
         return Err(ParseError::EmptyName);
     }
 
+    #[cfg(not(feature = "percent-encoding"))]
     let mut cookie = Cookie::new(name, value);
+    #[cfg(feature = "percent-encoding")]
+    let mut cookie = Cookie::new(
+        name,
+        percent_encoding::percent_decode_str(value)
+            .decode_utf8()
+            .map_err(|_| ParseError::ParseDecodeError)?,
+    );
 
     for attribute in attributes {
         let mut pair = attribute.splitn(2, '=');

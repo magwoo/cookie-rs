@@ -5,6 +5,15 @@ use std::time::Duration;
 pub use self::builder::CookieBuilder;
 use crate::StringPrison;
 
+#[cfg(feature = "percent-encoding")]
+const COOKIE_VALUE_ENCODE_SET: percent_encoding::AsciiSet = percent_encoding::CONTROLS
+    .add(b' ')
+    .add(b'"')
+    .add(b'%')
+    .add(b',')
+    .add(b';')
+    .add(b'\\');
+
 pub mod builder;
 pub mod parse;
 
@@ -606,7 +615,15 @@ impl std::str::FromStr for Cookie<'_> {
 
 impl fmt::Display for Cookie<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        #[cfg(not(feature = "percent-encoding"))]
         write!(f, "{}={}", self.name, self.value)?;
+        #[cfg(feature = "percent-encoding")]
+        write!(
+            f,
+            "{}={}",
+            self.name,
+            percent_encoding::utf8_percent_encode(&self.value, &COOKIE_VALUE_ENCODE_SET)
+        )?;
 
         if let Some(domain) = self.domain.as_ref() {
             write!(f, "; Domain={domain}")?;

@@ -310,3 +310,32 @@ fn cookie_into_owned_with_all_attributes() {
     assert_eq!(cookie.http_only(), Some(true));
     assert_eq!(cookie.same_site(), Some(SameSite::Strict));
 }
+
+#[cfg(feature = "percent-encoding")]
+#[test]
+fn cookie_value_decoded_on_parse() {
+    let cookie = Cookie::parse("data=hello%20world").unwrap();
+    assert_eq!(cookie.value(), "hello world");
+}
+
+#[cfg(feature = "percent-encoding")]
+#[test]
+fn cookie_value_decoded_utf8() {
+    let cookie = Cookie::parse("data=%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82").unwrap();
+    assert_eq!(cookie.value(), "привет");
+}
+
+#[cfg(feature = "percent-encoding")]
+#[test]
+fn cookie_value_invalid_encoding_passthrough() {
+    let cookie = Cookie::parse("data=%ZZ").unwrap();
+    assert_eq!(cookie.value(), "%ZZ");
+}
+
+#[cfg(feature = "percent-encoding")]
+#[test]
+fn cookie_value_percent_sign_roundtrip() {
+    let cookie = Cookie::new("data", "50% off");
+    let parsed = Cookie::parse(cookie.to_string()).unwrap();
+    assert_eq!(parsed.value(), "50% off");
+}

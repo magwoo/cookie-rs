@@ -22,22 +22,20 @@ pub struct CookieJar<'a> {
 }
 
 impl<'a> CookieJar<'a> {
-    /// Creates a new `CookieJar` with the given set of cookies.
+    /// Creates a new `CookieJar` with the given collection of cookies.
     ///
     /// # Arguments
-    /// - `cookie`: A collection of cookies to initialize the jar.
+    /// - `cookie`: An iterable of cookies to initialize the jar.
     ///
     /// # Example
     /// ```
     /// use cookie_rs::prelude::*;
-    /// use std::collections::BTreeSet;
     ///
-    /// let cookies = vec![Cookie::new("session", "abc123")].into_iter().collect::<BTreeSet<_>>();
-    /// let jar = CookieJar::new(cookies);
+    /// let jar = CookieJar::new(vec![Cookie::new("session", "abc123")]);
     /// ```
-    pub fn new<C: Into<BTreeSet<Cookie<'a>>>>(cookie: C) -> Self {
+    pub fn new(cookie: impl IntoIterator<Item = Cookie<'a>>) -> Self {
         Self {
-            cookie: cookie.into(),
+            cookie: cookie.into_iter().collect(),
             ..Default::default()
         }
     }

@@ -121,9 +121,10 @@ fn parse_cookie(str: &str, strict: bool) -> Result<Cookie<'_>, ParseError> {
                 cookie.set_expires(expires.ok_or(MissingPair::Expires)?)
             }
             _ if name.eq_ignore_ascii_case("HttpOnly") => cookie.set_http_only(true),
-            max_age if name.eq_ignore_ascii_case("Max-Age") => cookie.set_max_age(
-                Duration::from_secs(max_age.ok_or(MissingPair::MaxAge)?.parse()?),
-            ),
+            max_age if name.eq_ignore_ascii_case("Max-Age") => {
+                let secs: i64 = max_age.ok_or(MissingPair::MaxAge)?.parse()?;
+                cookie.set_max_age(Duration::from_secs(secs.max(0) as u64))
+            }
             _ if name.eq_ignore_ascii_case("Partitioned") => cookie.set_partitioned(true),
             path if name.eq_ignore_ascii_case("Path") => {
                 cookie.set_path(path.ok_or(MissingPair::Path)?)

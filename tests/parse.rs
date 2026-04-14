@@ -207,11 +207,41 @@ fn cookie_with_duplicate_attributes() {
 #[test]
 fn cookie_with_invalid_max_age() {
     let expected = Err(ParseError::ParseMaxAgeError(
-        "invalid".parse::<u64>().unwrap_err(),
+        "invalid".parse::<i64>().unwrap_err(),
     ));
     let input = "name=value; Max-Age=invalid";
 
     assert_eq!(Cookie::parse(input), expected);
+}
+
+#[test]
+fn cookie_with_negative_max_age() {
+    let expected = Cookie::builder("name", "value")
+        .max_age(std::time::Duration::ZERO)
+        .build();
+    let input = "name=value; Max-Age=-1";
+
+    assert_eq!(Cookie::parse(input), Ok(expected));
+}
+
+#[test]
+fn cookie_with_zero_max_age() {
+    let expected = Cookie::builder("name", "value")
+        .max_age(std::time::Duration::ZERO)
+        .build();
+    let input = "name=value; Max-Age=0";
+
+    assert_eq!(Cookie::parse(input), Ok(expected));
+}
+
+#[test]
+fn cookie_with_large_negative_max_age() {
+    let expected = Cookie::builder("name", "value")
+        .max_age(std::time::Duration::ZERO)
+        .build();
+    let input = "name=value; Max-Age=-99999";
+
+    assert_eq!(Cookie::parse(input), Ok(expected));
 }
 
 #[test]

@@ -131,7 +131,7 @@ fn parse_cookie(str: &str, strict: bool) -> Result<Cookie<'_>, ParseError> {
             }
             _ if name.eq_ignore_ascii_case("Secure") => cookie.set_secure(true),
             same_site if name.eq_ignore_ascii_case("SameSite") => {
-                cookie.set_same_site(SameSite::parse(same_site.ok_or(MissingPair::SameSite)?)?)
+                cookie.set_same_site(same_site.ok_or(MissingPair::SameSite)?.parse()?)
             }
             _ if strict => return Err(ParseError::UnknownAttribute(name.to_owned())),
             _ => continue,
@@ -141,31 +141,18 @@ fn parse_cookie(str: &str, strict: bool) -> Result<Cookie<'_>, ParseError> {
     Ok(cookie)
 }
 
-impl SameSite {
-    /// Parses a `SameSite` attribute value.
-    ///
-    /// # Arguments
-    /// - `value`: The string representation of the `SameSite` value.
-    ///
-    /// # Returns
-    /// A `Result` containing the parsed `SameSite` or a `ParseSameSiteError`.
-    ///
-    /// # Example
-    /// ```
-    /// use cookie_rs::prelude::*;
-    ///
-    /// let same_site = SameSite::parse("Strict").unwrap();
-    /// assert_eq!(same_site, SameSite::Strict);
-    /// ```
-    pub fn parse(value: &str) -> Result<Self, ParseSameSiteError> {
-        if value.eq_ignore_ascii_case("strict") {
+impl std::str::FromStr for SameSite {
+    type Err = ParseSameSiteError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.eq_ignore_ascii_case("strict") {
             Ok(Self::Strict)
-        } else if value.eq_ignore_ascii_case("lax") {
+        } else if s.eq_ignore_ascii_case("lax") {
             Ok(Self::Lax)
-        } else if value.eq_ignore_ascii_case("none") {
+        } else if s.eq_ignore_ascii_case("none") {
             Ok(Self::None)
         } else {
-            Err(ParseSameSiteError::UnknownValue(value.to_owned()))
+            Err(ParseSameSiteError::UnknownValue(s.to_owned()))
         }
     }
 }

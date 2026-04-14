@@ -152,10 +152,10 @@ impl<'a> CookieJar<'a> {
         &self.changes
     }
 
-    /// Converts all changes in the jar to HTTP header values.
+    /// Converts all pending changes in the jar to `Set-Cookie` response header values.
     ///
     /// # Returns
-    /// A vector of strings representing `Set-Cookie` header values.
+    /// A vector of strings, each representing a `Set-Cookie` header value.
     ///
     /// # Example
     /// ```

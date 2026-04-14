@@ -116,7 +116,7 @@ impl<'a> CookieJar<'a> {
         self.changes.replace(CookieChange::remove(name.into()));
     }
 
-    /// Returns a reference to all cookies currently stored in the jar.
+    /// Returns an iterator over all cookies currently stored in the jar.
     ///
     /// # Example
     /// ```
@@ -125,26 +125,14 @@ impl<'a> CookieJar<'a> {
     /// let mut jar = CookieJar::default();
     /// jar.add(Cookie::new("session", "abc123"));
     ///
-    /// let cookies = jar.cookie();
-    /// assert_eq!(cookies.len(), 1);
+    /// assert_eq!(jar.cookie().count(), 1);
     /// ```
-    pub fn cookie(&self) -> BTreeSet<&Cookie<'a>> {
-        let mut cookie = BTreeSet::new();
-
-        self.changes
-            .iter()
-            .filter_map(|c| c.cookie())
-            .for_each(|c| {
-                cookie.insert(c);
-            });
-
-        self.cookie.iter().for_each(|c| {
-            if !self.changes.iter().any(|ch| ch.name() == c.name()) {
-                cookie.insert(c);
-            }
-        });
-
-        cookie
+    pub fn cookie(&self) -> impl Iterator<Item = &Cookie<'a>> + '_ {
+        self.changes.iter().filter_map(|c| c.cookie()).chain(
+            self.cookie
+                .iter()
+                .filter(|c| !self.changes.iter().any(|ch| ch.name() == c.name())),
+        )
     }
 
     /// Returns a reference to all changes (additions and removals) in the jar.

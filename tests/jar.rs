@@ -23,21 +23,21 @@ fn cookie_jar_remove_cookie() {
 
 #[test]
 fn cookie_jar_empty_string() {
-    let cookie_count = CookieJar::parse("").map(|j| j.cookie().len());
+    let cookie_count = CookieJar::parse("").map(|j| j.cookie().count());
 
     assert_eq!(cookie_count, Ok(0))
 }
 
 #[test]
 fn cookie_jar_empty_string2() {
-    let cookie_count = CookieJar::parse(" ").map(|j| j.cookie().len());
+    let cookie_count = CookieJar::parse(" ").map(|j| j.cookie().count());
 
     assert_eq!(cookie_count, Ok(0))
 }
 
 #[test]
 fn cookie_jar_empty_string3() {
-    let cookie_count = CookieJar::parse(";").map(|j| j.cookie().len());
+    let cookie_count = CookieJar::parse(";").map(|j| j.cookie().count());
 
     assert_eq!(cookie_count, Ok(0))
 }
@@ -90,7 +90,7 @@ fn cookie_jar_parse_cookie_header() {
 #[test]
 fn cookie_jar_empty() {
     let jar = CookieJar::default();
-    assert!(jar.cookie().is_empty());
+    assert!(jar.cookie().next().is_none());
 }
 
 #[test]
@@ -121,11 +121,10 @@ fn cookie_jar_cookie_set_excludes_removed_from_parsed() {
 
     jar.remove("b");
 
-    let cookies = jar.cookie();
-    assert_eq!(cookies.len(), 2);
-    assert!(cookies.iter().any(|c| c.name() == "a"));
-    assert!(!cookies.iter().any(|c| c.name() == "b"));
-    assert!(cookies.iter().any(|c| c.name() == "c"));
+    assert_eq!(jar.cookie().count(), 2);
+    assert!(jar.cookie().any(|c| c.name() == "a"));
+    assert!(!jar.cookie().any(|c| c.name() == "b"));
+    assert!(jar.cookie().any(|c| c.name() == "c"));
 }
 
 #[test]
@@ -145,7 +144,7 @@ fn cookie_jar_remove_nonexistent() {
     jar.remove("ghost");
 
     assert!(jar.get("ghost").is_none());
-    assert!(jar.cookie().is_empty());
+    assert!(jar.cookie().next().is_none());
 }
 
 #[test]
@@ -175,7 +174,7 @@ fn cookie_jar_cookie_count_after_add_and_remove() {
     jar.add(Cookie::new("c", "3"));
     jar.remove("b");
 
-    assert_eq!(jar.cookie().len(), 2);
+    assert_eq!(jar.cookie().count(), 2);
     assert!(jar.get("a").is_some());
     assert!(jar.get("b").is_none());
     assert!(jar.get("c").is_some());
